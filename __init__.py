@@ -11,6 +11,10 @@ class Song(TypedDict):
 with open('input.txt', 'r') as file:
     input = file.read()
 
+if input == "":
+    with open('input.example.txt', 'r') as file:
+        input = file.read()
+
 
 current_tab_level = 0
 current_title = ""
@@ -52,21 +56,12 @@ for line in input.split("\n"):
         else:
             current_title = refined_string
 
-print("[")
-for item in output_array:
-    print(f"level: {item["level"]}")
-    print(f"title: {item["title"]}")
-    print(f"youtube_url: {item["youtube_url"]}")
-    print(" ")
-print("]")
-
 output_string = ""
 
 for index, item in enumerate(output_array):
     if index != 0 and index != len(output_array) - 1:
         output_string += spacer.replace("[HEIGHT]", "8px")
 
-    print(item)
     using_template = str(song)
     heading_level = f"{item["level"] + 2}"
     using_template = using_template.replace(
