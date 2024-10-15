@@ -59,7 +59,7 @@ for line in input.split("\n"):
 output_string = ""
 
 for index, item in enumerate(output_array):
-    if index != 0 and index != len(output_array) - 1:
+    if index != 0:
         output_string += spacer.replace("[HEIGHT]", "8px")
 
     using_template = str(song)
