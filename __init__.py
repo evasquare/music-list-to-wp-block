@@ -5,7 +5,7 @@ from templates import song, spacer
 class Song(TypedDict):
     level: int
     title: str
-    youtube_url: str
+    url: str
 
 
 with open('input.txt', 'r') as file:
@@ -16,46 +16,43 @@ if input == "":
         input = file.read()
 
 
-current_tab_level = 0
-current_title = ""
+# Prase the list
+previous_tab_level = 0
+previous_title = ""
 output_array: list[Song] = []
 
 for line in input.split("\n"):
     if line == "":
         continue
 
+    # Check tab level and text
     splitted_by_tabs = line.split("""	""")
-    while len(splitted_by_tabs) > 1:
-        splitted_by_tabs = splitted_by_tabs[1:]
+    new_tab_level = 0
+    new_title = ""
 
-        if len(splitted_by_tabs) <= 1:
-            refined_string = splitted_by_tabs[0].replace("- ", "", 1)
-
-            if (refined_string.startswith("https://")):
-                output_array += [Song(
-                    level=current_tab_level,
-                    title=current_title,
-                    youtube_url=splitted_by_tabs[0].split("- ")[1]
-                )]
-                current_tab_level = 0
-            else:
-                current_title = refined_string
+    for item in splitted_by_tabs:
+        if (item != ""):
+            new_title = splitted_by_tabs[-1].replace("- ", "", 1)
             break
         else:
-            current_tab_level += 1
-    else:
-        current_tab_level = 0
-        refined_string = splitted_by_tabs[0].replace("- ", "", 1)
+            new_tab_level += 1
 
-        if (refined_string.startswith("https://")):
-            output_array += [Song(
-                level=current_tab_level,
-                title=current_title,
-                youtube_url=splitted_by_tabs[0].split("- ")[1]
-            )]
+    # Check URL
+    if (new_title.startswith("https://")):
+        if (new_tab_level <= previous_tab_level):
+            raise Exception("Invalid syntax...")
         else:
-            current_title = refined_string
+            output_array.append(Song(
+                level=new_tab_level - 1,
+                title=previous_title,
+                url=new_title
+            ))
 
+    previous_tab_level = new_tab_level
+    previous_title = new_title
+
+
+# Use templates
 output_string = ""
 
 for index, item in enumerate(output_array):
@@ -68,7 +65,7 @@ for index, item in enumerate(output_array):
         "[HEADING_LEVEL]", heading_level)
     using_template = using_template.replace("[SONG_NAME]", item["title"])
     using_template = using_template.replace(
-        "[YOUTUBE_URL]", item["youtube_url"])
+        "[YOUTUBE_URL]", item["url"])
     output_string += using_template
 
 with open("output.html", "w") as file:
