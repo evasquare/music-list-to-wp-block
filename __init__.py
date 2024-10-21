@@ -68,5 +68,7 @@ for index, item in enumerate(output_array):
         "[YOUTUBE_URL]", item["url"])
     output_string += using_template
 
+output_string = output_string.strip()
+
 with open("output.html", "w") as file:
     file.write(output_string)
